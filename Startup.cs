@@ -1,10 +1,16 @@
+using GreatBooks.Data;
+using GreatBooks.Interfaces;
+using GreatBooks.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace GreatBooks
 {
@@ -27,6 +33,14 @@ namespace GreatBooks
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddRouting();
+
+            services.AddSingleton<IBookRepository>(InitializeCosmosClientInstanceAsync(
+                Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
+
+            string requestUri = Configuration.GetSection("OpenLibrary").GetSection("RequestUri").Value;
+            services.AddTransient<IOpenLibraryService>(s => new OpenLibraryService(requestUri));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,7 +57,7 @@ namespace GreatBooks
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -51,7 +65,7 @@ namespace GreatBooks
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                    template: "api/{controller}/{action=Index}/{id?}");
             });
 
             app.UseSpa(spa =>
@@ -63,9 +77,27 @@ namespace GreatBooks
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
+                    //spa.UseAngularCliServer(npmScript: "start");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
                 }
             });
+        }
+
+        private static async Task<BookRepository> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
+        {
+            string databaseName = configurationSection.GetSection("DatabaseName").Value;
+            string containerName = configurationSection.GetSection("ContainerName").Value;
+            string account = configurationSection.GetSection("Account").Value;
+            string key = configurationSection.GetSection("Key").Value;
+            CosmosClientBuilder clientBuilder = new CosmosClientBuilder(account, key);
+            CosmosClient client = clientBuilder
+                                .WithConnectionModeDirect()
+                                .Build();
+            BookRepository repository = new BookRepository(client, databaseName, containerName);
+            Database database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
+            await database.CreateContainerIfNotExistsAsync(containerName, "/key");
+
+            return repository;
         }
     }
 }
