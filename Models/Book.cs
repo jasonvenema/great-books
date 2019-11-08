@@ -27,7 +27,7 @@ namespace GreatBooks.Models
         public IEnumerable<BookAuthor> Authors { get; set; }
 
         [JsonProperty(PropertyName = "identifiers")]
-        public IEnumerable<BookIdentifier> Identifiers { get; set; }
+        public BookIdentifiers Identifiers { get; set; }
 
         [JsonProperty(PropertyName = "subjects")]
         public IEnumerable<BookSubject> Subjects { get; set; }

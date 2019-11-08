@@ -1,23 +1,21 @@
 <h1>Great Books List</h1>
 
-<p *ngIf="!forecasts"><em>Loading...</em></p>
+<p *ngIf="!_books"><em>Loading...</em></p>
 
-<div class="add-book">
-  <input #isbn />
-  <button class="btn-primary" (click)="onAddBook(isbn.value)">+Add</button>
+<form class="add-book">
+  <mat-form-field>
+    <input matInput placeholder="ISBN" #isbn />
+  </mat-form-field>
+  <button mat-button (click)="onAddBook(isbn.value)">+Add</button>
+</form>
+
+<div *ngFor="let book of _books" class="book">
+  <img *ngIf="book.cover && book.cover.medium; else noCover" src="{{book.cover.medium}}" height="180" />
+  <ng-template #noCover>
+    <img src="assets/images/no_cover.png" height="180" />
+  </ng-template>
+  <div class="book-info">
+    <p class="book-title">{{book.title}}</p>
+    <p class="book-subtitle">{{book.subtitle}}</p>
+  </div>
 </div>
-
-<table class='table table-striped' *ngIf="books">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Subtitle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let book of books">
-      <td>{{ book.title }}</td>
-      <td>{{ book.subtitle }}</td>
-    </tr>
-  </tbody>
-</table>

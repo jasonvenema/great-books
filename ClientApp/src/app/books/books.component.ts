@@ -22,7 +22,7 @@ export class BookComponent {
   }
 
   onAddBook(isbn: string) {
-    console.info('Clicked add button: ' + isbn)
+    console.info('Clicdysoked add button: ' + isbn)
 
     const httpOptions = {
       headers: new HttpHeaders({

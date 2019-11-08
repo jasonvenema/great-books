@@ -4,12 +4,12 @@ export interface IBook {
   title: string;
   subtitle: string;
   authors: IBookAuthor[];
-  identifiers: IBookIdentifier[];
+  identifiers: IBookIdentifier;
   subjects: IBookSubject[];
   publishers: IBookPublisher[];
   publish_date: string;
   excerpts: IBookExcerpt[];
-  cover: IBookCover[];
+  cover: IBookCover;
   number_of_pages: number;
   weight: string;
 }

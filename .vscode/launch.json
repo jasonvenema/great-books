@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "compounds": [
         {
-            "name": ".NET+Browser",
+            "name": "Full stack",
             "configurations": [
-                ".NET Core Launch (console)",
-                "Launch Chrome against localhost, with sourcemaps"
+                ".NET Core Launch (full)",
+                "Chrome"
             ]
         }
     ],
@@ -53,19 +53,31 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "Launch Chrome against localhost, with sourcemaps",
-            "type": "chrome",
+            "name": ".NET Core Launch (full)",
+            "type": "coreclr",
             "request": "launch",
-            "url": "http://localhost:4200",
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/ClientApp"
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.0/GreatBooks.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "launchBrowser": {
+                "enabled": false
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
         },
         {
-            "name": "Attach to Chrome, with sourcemaps",
             "type": "chrome",
-            "request": "attach",
-            "port": 4200,
-            "sourceMaps": true,
+            "request": "launch",
+            "name": "Chrome",
+            "url": "http://localhost:5000",
             "webRoot": "${workspaceRoot}/ClientApp"
         }
     ]

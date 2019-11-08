@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GreatBooks.Models
 {
-    public class BookIdentifier
+    public class BookIdentifiers
     {
         [JsonProperty(PropertyName = "lccn")]
         public IEnumerable<string> LCCN { get; set; }
