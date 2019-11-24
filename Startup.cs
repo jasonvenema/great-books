@@ -10,6 +10,8 @@ using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Configuration.Internal;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace GreatBooks
@@ -34,13 +36,24 @@ namespace GreatBooks
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            services.AddCors(options =>
+           {
+               options.AddDefaultPolicy(
+                   builder =>
+                   {
+                       builder.AllowAnyOrigin();
+                   }
+               );
+           });
+
             services.AddRouting();
 
             services.AddSingleton<IBookRepository>(InitializeCosmosClientInstanceAsync(
                 Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
 
             string requestUri = Configuration.GetSection("OpenLibrary").GetSection("RequestUri").Value;
-            services.AddTransient<IOpenLibraryService>(s => new OpenLibraryService(requestUri));
+            services.AddTransient<IOpenLibraryService, OpenLibraryService>();
+            services.AddTransient<HttpClient>(h => new HttpClient() { BaseAddress = new System.Uri(requestUri) });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,28 +72,29 @@ namespace GreatBooks
 
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            //app.UseSpaStaticFiles();
+
+            app.UseCors();
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "api/{controller}/{action=Index}/{id?}");
+                routes.MapRoute(name: "default", template: "api/{controller}/{action=Index}/{id?}");
+                routes.MapRoute(name: "search", template: "api/{controller}/{action=Index}/{query}");
             });
 
-            app.UseSpa(spa =>
-            {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
+            // app.UseSpa(spa =>
+            // {
+            //     // To learn more about options for serving an Angular SPA from ASP.NET Core,
+            //     // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                spa.Options.SourcePath = "ClientApp";
+            //     spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer(npmScript: "start");
-                    //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
-                }
-            });
+            //     if (env.IsDevelopment())
+            //     {
+            //         spa.UseAngularCliServer(npmScript: "start");
+            //         //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+            //     }
+            // });
         }
 
         private static async Task<BookRepository> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)

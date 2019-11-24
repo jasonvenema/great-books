@@ -1,0 +1,21 @@
+<p *ngIf="!_books"><em>Loading...</em></p>
+
+<form #form id="queryForm">
+  <mat-form-field class="full-width">
+    <input name="query" id="query" matInput placeholder="Search by title" #query [(ngModel)]="searchText" />
+  </mat-form-field>
+  <button mat-fab (click)="onSearch(query.value)" color="primary" class="field-right-button">
+    <mat-icon aria-hidden="false" aria-label="Search">search</mat-icon>
+  </button>
+</form>
+
+<div *ngFor="let book of _books | bookSearchFilter:searchText" class="book">
+  <img *ngIf="book.cover && book.cover.medium; else noCover" src="{{book.cover.medium}}" height="180" />
+  <ng-template #noCover>
+    <img src="assets/images/no_cover.png" height="180" />
+  </ng-template>
+  <div class="book-info">
+    <p class="book-title">{{book.title}}</p>
+    <p class="book-subtitle">{{book.subtitle}}</p>
+  </div>
+</div>

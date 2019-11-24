@@ -9,5 +9,7 @@ namespace GreatBooks.Interfaces
     public interface IOpenLibraryService
     {
         Task<Book> GetBookData(string isbn);
+
+        Task<SearchResult> GetSearchResult(string query);
     }
 }

@@ -7,17 +7,18 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { BookComponent } from './books/books.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material';
-import { MatInputModule } from '@angular/material';
+import { MatButtonModule, MatInputModule, MatIconModule, MatCardModule } from '@angular/material';
+import { BookSearchComponent } from './book-search/book-search.component';
+import { BookSearchFilterPipe } from './book-search-filter.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    BookComponent
+    BookSearchComponent,
+    BookSearchFilterPipe
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -25,11 +26,13 @@ import { MatInputModule } from '@angular/material';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'books', component: BookComponent },
+      { path: 'books', component: BookSearchComponent },
     ]),
     BrowserAnimationsModule,
     MatButtonModule,
-    MatInputModule
+    MatInputModule,
+    MatIconModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

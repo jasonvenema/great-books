@@ -57,8 +57,27 @@ namespace GreatBooks.Controllers
             }
             catch (Exception)
             {
-                //return BadRequest();
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("Search")]
+        public async Task<ActionResult> Search(string query)
+        {
+            try
+            {
+                var result = await _library.GetSearchResult(query);
+
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
             }
         }
     }
