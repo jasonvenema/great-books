@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IBook } from '../books/book';
+import { IBook } from '../interfaces/book';
+import { ISearchResult } from 'app/interfaces/search-result';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,12 @@ export class BookService {
     let url = this._baseUrl + '/api/Books/GetAll';
     console.log("BookService: Getting books from " + url);
     return this._http.get<IBook[]>(url);
+  }
+
+  searchBooks(query: string): Observable<ISearchResult> {
+    let url = this._baseUrl + '/api/Books/Search?query=' + query;
+    console.log("BookService: Searching books from " + url);
+    return this._http.get<ISearchResult>(url);
   }
 
   addBook(isbn: string) {

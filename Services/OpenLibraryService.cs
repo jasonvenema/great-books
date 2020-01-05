@@ -62,7 +62,6 @@ namespace GreatBooks.Services
 
         public async Task<SearchResult> GetSearchResult(string query)
         {
-            //var encodedQuery = WebUtility.UrlEncode(query);
             var requestUri = _httpClient.BaseAddress.ToString();
             var uriBuilder = new UriBuilder(requestUri);
             uriBuilder.Path = OPEN_LIBRARY_SEARCH_PATH;
@@ -76,7 +75,10 @@ namespace GreatBooks.Services
             {
                 try
                 {
-                    return JsonConvert.DeserializeObject<SearchResult>(response);
+                    var result = JsonConvert.DeserializeObject<SearchResult>(response);
+                    result.Documents = result.Documents.Where(
+                        d => d.PublishDate != null && (d.Isbn != null || d.Lccn != null));
+                    return result;
                 }
                 catch (Exception ex)
                 {
